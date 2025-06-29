@@ -482,7 +482,6 @@ Swal.fire({
         <p>Ahora puedes generar el ticket de abono.</p>
         <div class="d-flex justify-content-center gap-2 mt-3">
             <button id="btnAceptar" class="btn btn-secondary">Aceptar</button>
-            <button id="btnVerTicket" class="btn btn-dark">Ver Ticket</button>
         </div>
     `,
     showConfirmButton: false,

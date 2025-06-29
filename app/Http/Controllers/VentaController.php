@@ -202,43 +202,68 @@ $ventas = \App\Models\Venta::whereIn('tipo', ['venta', 'abono'])->orderBy('creat
     public function detalles()
     {
         return $this->hasMany(Detalleventa::class, 'id_venta');
+
     }
 
 public function ticketAbono($id, Request $request)
 {
-    $cliente = \App\Models\Cliente::with(['detallesDeuda.producto'])->findOrFail($id);
-    $company = \App\Models\Compania::first();
+    // Venta de tipo abono
+    $venta = \App\Models\Venta::with('user', 'detalles.producto', 'cliente')->findOrFail($id);
+    $cliente = $venta->cliente;
+
+    $abonoRealizado = $venta->total;
+
+    if ($cliente) {
+        // CALCULOS CORRECTOS
+        $deudaOriginal = $cliente->deuda_inicial ?? $abonoRealizado;
+        $deudaAnterior = $cliente->total_compra + $abonoRealizado;
+        $deudaRestante = $cliente->total_compra;
+        $nombreCliente = $cliente->nombre;
+    } else {
+        // Si el cliente se borró después de liquidar la deuda
+        // Intenta recuperar datos de la venta (si guardaste esos datos en la venta) o pon abono como único valor posible
+        $deudaOriginal = $abonoRealizado;
+        $deudaAnterior = $abonoRealizado;
+        $deudaRestante = 0;
+        $nombreCliente = 'Cliente eliminado';
+    }
+
+    $productosVendidos = $venta->detalles->sum('cantidad');
+    $pagoRecibido = $abonoRealizado;
+
+    $cambio = 0;
+    if ($venta->metodo_pago === 'efectivo' && $venta->pago_recibido > $abonoRealizado) {
+        $cambio = $venta->pago_recibido - $abonoRealizado;
+    }
+
     $formatter = new \Luecano\NumeroALetras\NumeroALetras();
+    $totalEnLetras = strtoupper($formatter->toMoney($abonoRealizado, 2, 'PESOS', 'CENTAVOS'));
 
+    $logoPath = public_path('storage/img/Logo-Colo.png');
+    $company = \App\Models\Compania::first();
 
-
-    $montoAbonado = floatval($request->input('abono') ?? $request->input('monto'));
-    $metodoPago = $request->input('metodo') ?? 'efectivo';
-
-    // Si no tienes deuda_inicial en la tabla, usa la suma de lo abonado más la deuda actual
-    $deudaOriginal = $cliente->deuda_inicial ?? ($cliente->total_compra + $montoAbonado);
-    $deudaAnterior = $cliente->total_compra + $montoAbonado;
-    $deudaRestante = $cliente->total_compra;
-    $productosVendidos = $cliente->detallesDeuda->sum('cantidad');
-    $totalEnLetras = ucfirst($formatter->toMoney($montoAbonado, 2, 'PESOS', 'CENTAVOS'));
-      $logoPath = public_path('storage/img/Logo-Negro.jpeg');
-
-    return view('venta.ticket-abono', [
+    $data = [
+        'venta' => $venta,
         'cliente' => $cliente,
+        'nombre_cliente' => $nombreCliente,
         'company' => $company,
         'deuda_original' => $deudaOriginal,
-        'montoInicial' => $deudaAnterior,
-        'montoAbonado' => $montoAbonado,
-        'deudaRestante' => $deudaRestante,
-        'totalEnLetras' => $totalEnLetras,
-        'productosVendidos' => $productosVendidos,
-        'metodoPago' => $metodoPago,
+        'deuda_anterior' => $deudaAnterior,
+        'abono_realizado' => $abonoRealizado,
+        'deuda_restante' => $deudaRestante,
+        'productos_vendidos' => $productosVendidos,
+        'pago_recibido' => $pagoRecibido,
+        'cambio' => $cambio,
+        'total_en_letras' => $totalEnLetras,
         'fecha' => now(),
-                'logoPath'
+        'logoPath' => $logoPath
+    ];
 
-    ]);
+    return \Pdf::loadView('venta.ticket-abono', $data)
+        ->setPaper([0, 0, 250, 700], 'portrait')
+        ->setWarnings(false)
+        ->stream("ticket_abono_{$venta->id}.pdf");
 }
-
 
 
 public function listVentas()
@@ -396,55 +421,5 @@ public function mostrarTicket($id)
         ->setWarnings(false)
         ->stream("ticket_abono_{$venta->id}.pdf");
 }
-public function registrarAbono(Request $request, $id)
-{
-    $request->validate([
-        'metodo' => 'required|in:efectivo,tarjeta',
-        'monto' => 'required|numeric|min:1'
-    ]);
 
-    $cliente = Cliente::findOrFail($id);
-    $original = $cliente->total_compra;
-
-    if ($cliente->total_compra <= 0) {
-        return response()->json(['success' => false, 'message' => 'Este cliente no tiene deuda.']);
-    }
-
-    $montoAbonado = $request->monto;
-    $cambio = 0;
-    if ($request->metodo === 'efectivo' && $montoAbonado > $cliente->total_compra) {
-        $cambio = $montoAbonado - $cliente->total_compra;
-    }
-
-    // Descontar abono
-    $cliente->total_compra -= $montoAbonado;
-    if ($cliente->total_compra < 0) $cliente->total_compra = 0;
-    $cliente->save();
-
-    // REGISTRA EL ABONO COMO VENTA
-    $venta = \App\Models\Venta::create([
-        'total' => $montoAbonado,
-        'pago_recibido' => $montoAbonado,
-        'id_usuario' => auth()->id(),
-        'metodo_pago' => $request->metodo,
-        'tipo' => 'abono',
-        'cliente_id' => $cliente->id, // si tienes este campo
-    ]);
-
-    // Puedes agregar aquí los detalles de productos si deseas
-
-    // Genera URL de ticket de abono
-    $ticketUrl = route('ventas.ticket.abono', [
-        'id' => $cliente->id,
-        'monto' => $original,
-        'abono' => $request->monto,
-        'cambio' => $cambio
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Abono registrado correctamente',
-        'ticket_url' => $ticketUrl
-    ]);
-}
 }

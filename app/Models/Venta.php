@@ -20,4 +20,8 @@ public function detalles()
     return $this->hasMany(Detalleventa::class, 'id_venta');
 }
 
+public function cliente() {
+    return $this->belongsTo(Cliente::class, 'cliente_id');
+}
+
 }

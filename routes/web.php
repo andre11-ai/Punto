@@ -86,7 +86,8 @@ Route::get('/venta/{id}/ticket-abono', [VentaController::class, 'ticketAbono'])-
 
 Route::get('/venta/{cliente}/registrar-abono-final/{monto}', [VentaController::class, 'registrarAbonoFinal']);
 Route::get('/ventas/ticket/{id}', [VentaController::class, 'mostrarTicket'])->name('ventas.ticket');
-
+Route::post('/ventas/registrar-abono/{clienteId}', [App\Http\Controllers\VentaController::class, 'registrarAbono'])->name('ventas.registrarAbono');
+Route::get('/ventas/ticket-abono/{id}', [VentaController::class, 'ticketAbono'])->name('ventas.ticket.abono');
 
 
         });

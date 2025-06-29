@@ -120,50 +120,90 @@ public function listarClientes()
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
-
-
 public function registrarAbono(Request $request, $id)
 {
-    $request->validate([
-        'metodo' => 'required|in:efectivo,tarjeta',
-        'monto' => 'required|numeric|min:1'
-    ]);
+    try {
+        $request->validate([
+            'metodo' => 'required|in:efectivo,tarjeta',
+            'monto' => 'required|numeric|min:1'
+        ]);
 
-    $cliente = Cliente::findOrFail($id);
-    $original = $cliente->total_compra;
+        $cliente = \App\Models\Cliente::findOrFail($id);
+        $montoAbonado = floatval($request->input('monto'));
+        $metodo = $request->input('metodo') ?? 'efectivo';
+        $original = $cliente->total_compra;
+        $cambio = 0;
 
-    if ($cliente->total_compra <= 0) {
-        return response()->json(['success' => false, 'message' => 'Este cliente no tiene deuda.']);
+        if ($cliente->total_compra <= 0) {
+            return response()->json(['success' => false, 'message' => 'Este cliente no tiene deuda.']);
+        }
+
+        // Si paga de más y es efectivo, calcular cambio
+        if ($metodo === 'efectivo' && $montoAbonado > $cliente->total_compra) {
+            $cambio = $montoAbonado - $cliente->total_compra;
+        }
+
+        // Descontar abono y ajustar deuda
+        $cliente->total_compra -= $montoAbonado;
+        if ($cliente->total_compra < 0) $cliente->total_compra = 0;
+        $cliente->save();
+
+        // REGISTRAR EL ABONO COMO VENTA (SIEMPRE)
+        $venta = \App\Models\Venta::create([
+            'total' => $montoAbonado,
+            'pago_recibido' => $montoAbonado,
+            'id_usuario' => auth()->id(),
+            'metodo_pago' => $metodo,
+            'tipo' => 'abono',
+            'cliente_id' => $cliente->id
+        ]);
+
+        // Buscar o crear el producto de abono
+$productoAbono = \App\Models\Producto::firstOrCreate(
+    ['producto' => 'Abono a deuda'],
+    [
+        'precio' => 0,
+        'codigo' => 'ABONO',
+        'precio_compra' => 0,
+        'precio_venta' => 0,
+        'id_categoria' => 1, // Usa el id de una categoría existente
+'codigo_barras' => 'ABONO'
+ ]
+);
+
+        // Registrar un detalle genérico para el abono
+        \App\Models\Detalleventa::create([
+            'precio' => $montoAbonado,
+            'cantidad' => 1,
+            'id_producto' => $productoAbono->id,
+            'id_venta' => $venta->id,
+            'descripcion' => 'Abono a deuda'
+        ]);
+
+        if ($cliente->total_compra <= 0) {
+            $cliente->delete();
+        }
+
+        $ticketUrl = route('ventas.ticket.abono', [
+            'id' => $venta->id,
+            'monto' => $montoAbonado,
+            'abono' => $montoAbonado,
+            'cambio' => $cambio
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Abono registrado correctamente',
+            'ticket_url' => $ticketUrl,
+            'venta_id' => $venta->id,
+            'cliente_id' => $cliente->id
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
     }
-
-    $montoAbonado = $request->monto;
-    $cambio = 0;
-
-    // Si paga de más y es efectivo, calcular cambio
-    if ($request->metodo === 'efectivo' && $montoAbonado > $cliente->total_compra) {
-        $cambio = $montoAbonado - $cliente->total_compra;
-    }
-
-    // Descontar abono y ajustar deuda
-    $cliente->total_compra -= $montoAbonado;
-    if ($cliente->total_compra < 0) {
-        $cliente->total_compra = 0;
-    }
-    $cliente->save();
-
-    // Simulación de ticket
-    $ticketUrl = route('ventas.ticket.abono', [
-        'id' => $cliente->id,
-        'monto' => $original,
-        'abono' => $request->monto,
-        'cambio' => $cambio
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Abono registrado correctamente',
-        'ticket_url' => $ticketUrl
-    ]);
 }
 
 public function ticketAbono($id, Request $request)
