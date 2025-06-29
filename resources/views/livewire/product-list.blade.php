@@ -20,65 +20,78 @@
                     </div>
                 @else
                     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                        @foreach ($products as $product)
-                            <div class="col">
-                                <div class="card h-100 border-0 shadow-sm product-card">
-                                    <div class="card-body text-center p-2">
-                                        @if($product->foto)
-                                            <img src="{{ asset('storage/'.$product->foto) }}"
-                                                 class="img-fluid mb-2 rounded"
-                                                 style="max-height: 100px; object-fit: contain;">
-                                        @else
-                                            <img src="{{ asset('img/default.png') }}"
-                                                 class="img-fluid mb-2 rounded"
-                                                 style="max-height: 100px; object-fit: contain;">
-                                        @endif
+@foreach ($products as $product)
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm product-card
+            {{ $product->sku <= 0 ? 'bg-danger bg-opacity-10 border-danger' : '' }}">
+            <div class="card-body text-center p-2">
+                @if($product->foto)
+                    <img src="{{ asset('storage/'.$product->foto) }}"
+                         class="img-fluid mb-2 rounded"
+                         style="max-height: 100px; object-fit: contain;">
+                @else
+                    <img src="{{ asset('img/default.png') }}"
+                         class="img-fluid mb-2 rounded"
+                         style="max-height: 100px; object-fit: contain;">
+                @endif
 
-                                        <div class="d-flex justify-content-center align-items-center mb-2">
-                                            <button class="btn btn-outline-secondary btn-sm py-0 px-2"
-                                                    wire:click="decreaseQuantity({{ $product->id }})"
-                                                    type="button">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="text" readonly
-                                                   class="form-control form-control-sm text-center mx-1"
-                                                   style="max-width: 40px;"
-                                                   value="{{ $quantitySelector[$product->id] ?? 1 }}">
-                                            <button class="btn btn-outline-secondary btn-sm py-0 px-2"
-                                                    wire:click="increaseQuantity({{ $product->id }})"
-                                                    type="button">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
+<div class="d-flex justify-content-center align-items-center mb-2">
+    <button class="btn btn-outline-secondary btn-sm py-0 px-2"
+            wire:click="decreaseQuantity({{ $product->id }})"
+            type="button"
+            {{ $product->sku <= 0 ? 'disabled' : '' }}>
+        <i class="fas fa-minus"></i>
+    </button>
+    <input type="number" readonly
+           class="form-control form-control-sm text-center mx-1"
+           style="max-width: 40px;"
+           min="1"
+           max="{{ $product->sku }}"
+           value="{{ $quantitySelector[$product->id] ?? 1 }}">
+    <button class="btn btn-outline-secondary btn-sm py-0 px-2"
+            wire:click="increaseQuantity({{ $product->id }})"
+            type="button"
+            {{ $product->sku <= 0 || ($quantitySelector[$product->id] ?? 1) >= $product->sku ? 'disabled' : '' }}>
+        <i class="fas fa-plus"></i>
+    </button>
+</div>
 
-                                        <button wire:click="addToCart({{ $product->id }})"
-                                                wire:loading.attr="disabled"
-                                                wire:target="addToCart"
-                                                class="btn btn-primary btn-sm w-100 mb-2">
-                                            <i class="fas fa-cart-plus"></i> Agregar
-                                        </button>
+<button wire:click="addToCart({{ $product->id }})"
+        wire:loading.attr="disabled"
+        wire:target="addToCart"
+        class="btn {{ $product->sku <= 0 ? 'btn-danger' : 'btn-primary' }} btn-sm w-100 mb-2"
+        {{ $product->sku <= 0 ? 'disabled' : '' }}>
+    <i class="fas fa-cart-plus"></i>
+    {{ $product->sku <= 0 ? 'Agotado' : 'Agregar' }}
+</button>
 
-                                        <h6 class="card-title mb-1 text-truncate">
-                                            {{ $product->producto }}
-                                        </h6>
+                <h6 class="card-title mb-1 text-truncate">
+                    {{ $product->producto }}
+                </h6>
 
-                                        <p class="mb-1 text-muted small">
-                                            <small>{{ $product->codigo_barras }}</small>
-                                        </p>
+                <p class="mb-1 text-muted small">
+                    <small>{{ $product->codigo_barras }}</small>
+                </p>
 
-                                        <p class="mb-0 fw-bold text-primary">
-                                            ${{ number_format($product->precio_venta, 2) }}
-                                        </p>
-
-                                        @if($product->promocion)
-                                            <span class="badge bg-warning text-dark mt-1">
-                                                {{ $product->promocion->tipo }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+                <p class="mb-0 fw-bold {{ $product->sku <= 0 ? 'text-danger' : 'text-primary' }}">
+                    ${{ number_format($product->precio_venta, 2) }}
+                </p>
+                <p class="mb-0">
+                    @if($product->sku > 0)
+                        <span class="badge bg-success">Stock: {{ $product->sku }}</span>
+                    @else
+                        <span class="badge bg-danger">AGOTADO</span>
+                    @endif
+                </p>
+                @if($product->promocion)
+                    <span class="badge bg-warning text-dark mt-1">
+                        {{ $product->promocion->tipo }}
+                    </span>
+                @endif
+            </div>
+        </div>
+    </div>
+@endforeach
                     </div>
 
                     <div class="mt-3 d-flex justify-content-center">
@@ -112,6 +125,11 @@
                                 <tr>
                                     <th style="width: 40%">Producto</th>
                                     <th class="text-end">Precio</th>
+                                    @if($product->sku > 0)
+    <span class="badge bg-success mb-1">Stock: {{ $product->sku }}</span>
+@else
+    <span class="badge bg-danger mb-1">AGOTADO</span>
+@endif
                                     <th class="text-center">Cant.</th>
                                     <th class="text-center">Acción</th>
                                 </tr>
@@ -234,12 +252,12 @@
                                     @if(count($cartItems) == 0) disabled @endif>
                                 <i class="fas fa-trash me-2"></i>Vaciar carrito
                             </button>
-<button id="btnPagar"
-        class="btn btn-primary btn-lg"
-        onclick="mostrarMetodosPago()"
-        @if(count($cartItems) == 0) disabled @endif>
-    <i class="fas fa-cash-register me-2"></i>Pagar
-</button>
+                            <button id="btnPagar"
+                                    class="btn btn-primary btn-lg"
+                                    onclick="mostrarMetodosPago()"
+                                    @if(count($cartItems) == 0) disabled @endif>
+                                <i class="fas fa-cash-register me-2"></i>Pagar
+                            </button>
 
                         </div>
                     </div>
@@ -268,11 +286,11 @@
                     <form id="formDeudor">
                         <div class="mb-3">
                             <label for="nombreDeudor" class="form-label">Nombre completo</label>
-<input type="text" id="nombreDeudor" name="nombre" class="form-control">
+                            <input type="text" id="nombreDeudor" name="nombre" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="telefonoDeudor" class="form-label">Teléfono</label>
-<input type="text" id="telefonoDeudor" name="telefono" class="form-control">
+                            <input type="text" id="telefonoDeudor" name="telefono" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="totalAdeudo" class="form-label">Total de la compra</label>
@@ -296,6 +314,107 @@
 
 @push('styles')
 <style>
+    /* --------- ESTILO GENERAL DE TARJETAS Y BOTONES --------- */
+.card-header.bg-primary, .card-header {
+    background-color: #3490dc !important;
+    color: white !important;
+}
+.btn-primary, .btn-primary:disabled, .btn-primary:focus {
+    background-color: #3490dc !important;
+    border-color: #2a7aaf !important;
+}
+.btn-primary:hover {
+    background-color: #2a7aaf !important;
+    border-color: #226089 !important;
+}
+.btn-outline-danger:hover, .btn-outline-danger:focus {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    border-color: #d52d3a !important;
+}
+
+.badge.bg-primary, .badge.bg-info, .badge.bg-warning, .badge.bg-white, .badge.bg-success {
+    font-weight: 500;
+    font-size: 0.85rem;
+    border-radius: 0.4rem;
+    padding: 0.38em 0.8em;
+}
+.badge.bg-primary { background-color: #3490dc !important; color: #fff !important; }
+.badge.bg-info { background-color: #e3e7f3 !important; color: #2a7aaf !important; }
+.badge.bg-warning { background-color: #ffe066 !important; color: #856404 !important; }
+.badge.bg-white { background-color: #fff !important; color: #3490dc !important; }
+.badge.bg-success { background-color: #28a745 !important; color: #fff !important; }
+
+.card.shadow-sm {
+    box-shadow: 0 2px 10px rgba(52, 144, 220, 0.08), 0 1.5px 3px rgba(0,0,0,0.03);
+    border: none;
+}
+.product-card {
+    border: 1px solid #e9ecef;
+    transition: all 0.3s;
+}
+.product-card:hover {
+    box-shadow: 0 6px 24px rgba(52, 144, 220, 0.14);
+    border-color: #3490dc;
+    transform: translateY(-5px) scale(1.01);
+}
+.btn-action {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+/* --------- ALERTAS --------- */
+.alert-success {
+    border-left: 4px solid #28a745;
+}
+.alert-success strong {
+    color: #28a745;
+}
+.alert-warning {
+    border-left: 4px solid #ffe066;
+}
+.alert-warning i {
+    color: #ffe066;
+}
+.alert-warning {
+    color: #856404;
+    background-color: #fffbe6;
+    border-color: #ffe066;
+}
+
+/* --------- MODALES --------- */
+.modal-header.bg-warning {
+    background-color: #ffe066 !important;
+    color: #856404 !important;
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+/* --------- TABLA DEL CARRITO --------- */
+.table thead th, .table-light th {
+    background-color: #3490dc !important;
+    color: #fff !important;
+    font-weight: 500;
+}
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+.table-hover > tbody > tr:hover {
+    background-color: rgba(52, 144, 220, 0.08);
+}
+
+/* --------- OTROS DETALLES --------- */
+input.form-control:read-only, input.form-control[readonly] {
+    background-color: #f0f7ff !important;
+    color: #3490dc !important;
+    font-weight: bold;
+}
+@media (max-width: 650px) {
+    .card-header h5, .card-header span, .card-header .badge { font-size: 1.1rem !important; }
+}
     .product-card {
         transition: all 0.3s ease;
     }
@@ -304,7 +423,6 @@
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    /* Estilos para SweetAlert2 */
     .swal2-popup {
         border-radius: 10px !important;
     }
@@ -339,7 +457,6 @@
         color: #4e73df;
     }
 
-    /* Estilo para el input de efectivo */
     .cash-input {
         font-size: 1.5rem !important;
         font-weight: bold !important;
@@ -347,7 +464,6 @@
         padding: 15px !important;
     }
 
-    /* Estilo para los mensajes de cambio */
     .change-message {
         font-size: 1.2rem;
         font-weight: bold;
@@ -411,8 +527,8 @@
                 showConfirmButton: false,
                 showCancelButton: true,
                 cancelButtonText: 'Cancelar',
-                allowOutsideClick: true,   // ← permitir clics fuera del modal
-                backdrop: false,           // ← no ocultar el fondo
+                allowOutsideClick: true,
+                backdrop: false,
                 width: '600px',
                 didOpen: () => {
                     document.getElementById('swalEfectivo').addEventListener('click', function () {
@@ -426,7 +542,7 @@
                     });
 
                     document.getElementById('swalAdeudo').addEventListener('click', function () {
-                        abrirModalDeudor(total); // ← sin cerrar SweetAlert
+                        abrirModalDeudor(total);
                     });
                 }
             });
@@ -443,7 +559,7 @@
 
         Swal.close();
 
-        // Esperar a cerrar SweetAlert y abrir modal con rootElement correcto
+
         setTimeout(() => {
             const modal = new bootstrap.Modal(modalElement, {
                 backdrop: 'static',
@@ -465,41 +581,33 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Ocultar modal manualmente
+
         const modal = bootstrap.Modal.getInstance(document.getElementById('adeudoModal'));
         if (modal) modal.hide();
 
-        // Llamar a Livewire para registrar la deuda
         @this.call('procesarVenta', 'adeudo', {
             nombre: nombre,
             telefono: telefono
         }).then(response => {
             if (response.success && response.cliente_id) {
-Swal.fire({
-    icon: 'success',
-    title: '¡DEUDA REGISTRADA!',
-    html: `
-        <p>Ahora puedes generar el ticket de abono.</p>
-        <div class="d-flex justify-content-center gap-2 mt-3">
-            <button id="btnAceptar" class="btn btn-secondary">Aceptar</button>
-        </div>
-    `,
-    showConfirmButton: false,
-    allowOutsideClick: false,
-    didOpen: () => {
-        document.getElementById('btnVerTicket').addEventListener('click', () => {
-            window.open(`/venta/${response.cliente_id}/ticket-abono`, '_blank');
-            Swal.close();
-            location.reload();
-        });
-
-        document.getElementById('btnAceptar').addEventListener('click', () => {
-            Swal.close();
-            location.reload();
-        });
-    }
-});
-
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡DEUDA REGISTRADA!',
+                    html: `
+                        <p>Ahora puedes generar el ticket de abono.</p>
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button id="btnAceptar" class="btn btn-secondary">Aceptar</button>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        document.getElementById('btnAceptar').addEventListener('click', () => {
+                            Swal.close();
+                            location.reload();
+                        });
+                    }
+                });
             } else {
                 Swal.fire('Error', response.message || 'No se pudo registrar la deuda.', 'error');
             }

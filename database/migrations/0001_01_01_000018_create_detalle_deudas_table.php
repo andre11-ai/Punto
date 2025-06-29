@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('promocion_aplicada')->nullable();
             $table->timestamps();
 
-            // Índices para mejorar rendimiento en búsquedas
             $table->index('cliente_id');
             $table->index('producto_id');
         });

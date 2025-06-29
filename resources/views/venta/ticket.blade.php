@@ -30,7 +30,6 @@
 .logo img {
     max-width: 70px;
     max-height: 70px;
-    display: block;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 5px;
@@ -40,9 +39,8 @@
 <body>
     <div class="ticket">
         <div class="header">
-<div class="logo">
     <img src="{{ public_path('storage/img/Logo-Colo.png') }}" alt="Logo" style="display: block; margin: 0 auto 5px auto; max-width: 70px; max-height: 70px;">
-</div>
+
 
             <div class="business-name">{{ $company->nombre }}</div>
             <div class="business-info">{{ $company->direccion }}</div>

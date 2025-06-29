@@ -1,9 +1,33 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Configuración de Compañía')
 
 @section('content_header')
-    <h1>Compania</h1>
+    <h1><i class="fas fa-building me-2"></i>Configuración de Compañía</h1>
+@stop
+
+@section('css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .card-header {
+            background-color: #3490dc !important;
+            color: white;
+        }
+        .alert-success {
+            border-left: 4px solid #28a745;
+        }
+        .btn-close {
+            filter: invert(1);
+        }
+        .form-control:focus {
+            border-color: #3490dc;
+            box-shadow: 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
+        }
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+        }
+    </style>
 @stop
 
 @section('content')
@@ -11,55 +35,85 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-
-                        <span id="card_title">
-                            {{ __('Compania') }}
-                        </span>
-
-                    </div>
+                    <span id="card_title">
+                        <i class="fas fa-cog me-2"></i>{{ __('Configuración de la Compañía') }}
+                    </span>
                 </div>
                 <div class="card-body">
                     @if ($message = Session::get('success'))
-                        <div class="alert fade_success .fade">
-                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&times;</button>
-                            <strong>{{ $message }}</strong>
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="fas fa-check-circle me-2"></i><strong>{{ $message }}</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
-                    <form method="POST" action="{{ route('compania.update', $compania) }}" role="form">
-                        {{ method_field('PUT') }}
 
+                    <form method="POST" action="{{ route('compania.update', $compania) }}" role="form" class="needs-validation" novalidate>
+                        @method('PUT')
                         @csrf
 
-                        <div class="box box-info padding-1">
-                            <div class="box-body row">
-                                <div class="form-group col-md-4">
-                                    {{ Form::label('nombre') }}
-                                    {{ Form::text('nombre', $compania->nombre, ['class' => 'form-control' . ($errors->has('nombre') ? ' is-invalid' : ''), 'placeholder' => 'Nombre']) }}
-                                    {!! $errors->first('nombre', '<div class="invalid-feedback">:message</div>') !!}
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ Form::label('nombre', 'Nombre', ['class' => 'form-label']) }}
+                                    {{ Form::text('nombre', $compania->nombre, [
+                                        'class' => 'form-control' . ($errors->has('nombre') ? ' is-invalid' : ''),
+                                        'placeholder' => 'Nombre de la compañía',
+                                        'required'
+                                    ]) }}
+                                    @error('nombre')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                <div class="form-group col-md-4">
-                                    {{ Form::label('telefono') }}
-                                    {{ Form::text('telefono', $compania->telefono, ['class' => 'form-control' . ($errors->has('telefono') ? ' is-invalid' : ''), 'placeholder' => 'Teléfono']) }}
-                                    {!! $errors->first('telefono', '<div class="invalid-feedback">:message</div>') !!}
-                                </div>
-                                <div class="form-group col-md-4">
-                                    {{ Form::label('correo') }}
-                                    {{ Form::text('correo', $compania->correo, ['class' => 'form-control' . ($errors->has('correo') ? ' is-invalid' : ''), 'placeholder' => 'Correo']) }}
-                                    {!! $errors->first('correo', '<div class="invalid-feedback">:message</div>') !!}
-                                </div>
-                                <div class="form-group col-md-5">
-                                    {{ Form::label('direccion') }}
-                                    {{ Form::text('direccion', $compania->direccion, ['class' => 'form-control' . ($errors->has('direccion') ? ' is-invalid' : ''), 'placeholder' => 'Dirección']) }}
-                                    {!! $errors->first('direccion', '<div class="invalid-feedback">:message</div>') !!}
-                                </div>
-
                             </div>
-                            <div class="box-footer mt20 text-right">
-                                <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ Form::label('telefono', 'Teléfono', ['class' => 'form-label']) }}
+                                    {{ Form::text('telefono', $compania->telefono, [
+                                        'class' => 'form-control' . ($errors->has('telefono') ? ' is-invalid' : ''),
+                                        'placeholder' => 'Teléfono',
+                                        'required'
+                                    ]) }}
+                                    @error('telefono')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ Form::label('correo', 'Correo Electrónico', ['class' => 'form-label']) }}
+                                    {{ Form::email('correo', $compania->correo, [
+                                        'class' => 'form-control' . ($errors->has('correo') ? ' is-invalid' : ''),
+                                        'placeholder' => 'correo@ejemplo.com',
+                                        'required'
+                                    ]) }}
+                                    @error('correo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ Form::label('direccion', 'Dirección', ['class' => 'form-label']) }}
+                                    {{ Form::text('direccion', $compania->direccion, [
+                                        'class' => 'form-control' . ($errors->has('direccion') ? ' is-invalid' : ''),
+                                        'placeholder' => 'Dirección completa',
+                                        'required'
+                                    ]) }}
+                                    @error('direccion')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-end mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>{{ __('Guardar Cambios') }}
+                                </button>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -67,6 +121,35 @@
     </div>
 @stop
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-@endsection
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validación de formulario
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // Cerrar alertas automáticamente después de 5 segundos
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove();
+            });
+        }, 5000);
+    </script>
+@stop

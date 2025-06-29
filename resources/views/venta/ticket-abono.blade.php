@@ -3,31 +3,42 @@
 <head>
     <title>Ticket de Abono</title>
     <style>
-        body { margin:0; padding:0; }
-        .ticket {
-            width: 250px;
-            margin: 0 auto;
-            font-size: 13px;
-            font-family: Arial, sans-serif;
-            padding: 10px;
-        }
-        .header { text-align: center; margin-bottom: 10px; }
-        .logo { max-width: 70px; margin-bottom: 10px; }
-        .business-name { font-size: 18px; font-weight: bold; }
-        .business-info { font-size: 12px; color: #555; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+        body { padding: 10px; }
+        .ticket { width: 80mm; padding: 10px; font-size: 12px; }
+        .header { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #333; }
+        .logo { max-width: 80px; margin-bottom: 10px; }
+        .business-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .business-info { font-size: 12px; color: #555; margin-bottom: 5px; }
+        .ticket-info { margin: 15px 0; font-size: 13px; }
+        .ticket-info p { margin: 3px 0; }
         .divider { border-top: 1px dashed #333; margin: 10px 0; }
-        .total-section { margin-top: 10px; }
-        .total-row { display: flex; justify-content: space-between; margin: 3px 0; }
+        .items-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+        .items-table th { text-align: left; padding: 5px 0; border-bottom: 1px solid #ddd; }
+        .items-table td { padding: 5px 0; border-bottom: 1px solid #eee; }
+        .items-table .text-right { text-align: right; }
+        .total-section { margin-top: 15px; font-size: 14px; }
+        .total-row { display: flex; justify-content: space-between; margin: 5px 0; }
         .total-label, .total-value { font-weight: bold; }
-        .payment-method { margin: 10px 0; padding: 6px; background: #f5f5f5; border-radius: 4px; font-size: 14px; }
+        .footer { margin-top: 20px; text-align: center; font-size: 11px; color: #777; }
         .thank-you { margin-top: 15px; font-style: italic; text-align: center; }
-        .footer { margin-top: 10px; text-align: center; font-size: 11px; color: #777; }
+        .payment-method { margin: 10px 0; padding: 8px; background: #f5f5f5; border-radius: 4px; font-size: 13px; }
+        .logo {
+    text-align: center;
+    margin-bottom: 5px;
+}
+.logo img {
+    max-width: 70px;
+    max-height: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+}
     </style>
-</head>
 <body>
     <div class="ticket">
         <div class="header">
-            <img src="{{ $logoPath }}" class="logo" alt="Logo">
+    <img src="{{ public_path('storage/img/Logo-Colo.png') }}" alt="Logo" style="display: block; margin: 0 auto 5px auto; max-width: 70px; max-height: 70px;">
             <div class="business-name">{{ $company->nombre }}</div>
             <div class="business-info">{{ $company->direccion }}</div>
             <div class="business-info">Tel: {{ $company->telefono }}</div>
@@ -38,7 +49,7 @@
 
         <div>
             <strong>Fecha:</strong> {{ $fecha->format('Y-m-d H:i') }}<br>
-            <strong>Cliente:</strong> {{ $cliente?->nombre ?? 'Cliente eliminado' }}
+<strong>Cliente:</strong> {{ $cliente->nombre }}<br>
         </div>
 
         <div class="payment-method">
@@ -47,8 +58,7 @@
 
         <div class="total-section">
             <div class="total-row">
-                <span class="total-label">Deuda original:</span>
-                <span class="total-value">${{ number_format($deuda_original, 2) }}</span>
+<strong>Deuda original:</strong> ${{ number_format($deuda_original, 2) }}
             </div>
             <div class="total-row">
                 <span class="total-label">Deuda anterior:</span>

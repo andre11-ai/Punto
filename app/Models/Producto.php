@@ -16,7 +16,9 @@ protected $fillable = [
     'id_proveedor',
     'codigo_barras',
     'foto',
-    'promocion_id'
+    'promocion_id',
+    'sku',
+    'devolucion'
 ];
 
     public function proveedor()

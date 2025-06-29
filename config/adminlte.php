@@ -361,6 +361,11 @@ return [
                     'url'  => '/venta/show',
                     'icon' => 'fas fa-truck',
                 ],
+                               [
+                    'text' => 'Devoluciones',
+                    'url'  => '/venta/devolucion',
+                    'icon' => '',
+                ],
             ],
         ]
     ],

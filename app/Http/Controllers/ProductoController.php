@@ -70,6 +70,8 @@ class ProductoController extends Controller
             'precio_venta' => 'required|numeric|min:0|gt:precio_compra',
             'id_categoria' => 'required|exists:categorias,id',
             'id_proveedor' => 'required|exists:proveedores,id',
+                    'sku' => 'required|integer|min:0',
+        'devolucion' => 'required|boolean',
             'codigo_barras' => 'required|string|size:13|unique:productos,codigo_barras',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'promocion' => 'nullable|string'
@@ -135,6 +137,8 @@ class ProductoController extends Controller
             'precio_venta' => 'required|numeric|min:0|gt:precio_compra',
             'id_categoria' => 'required|exists:categorias,id',
             'id_proveedor' => 'required|exists:proveedores,id',
+                    'sku' => 'required|integer|min:0',
+        'devolucion' => 'required|boolean',
             'codigo_barras' => 'required|string|size:13|unique:productos,codigo_barras,'.$producto->id,
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'promocion' => 'nullable|string'
@@ -185,6 +189,8 @@ class ProductoController extends Controller
                 'precio_venta' => $producto->precio_venta,
                 'categoria' => $producto->categoria ? ['nombre' => $producto->categoria->nombre] : null,
                 'proveedor' => $producto->proveedor ? ['nombre' => $producto->proveedor->nombre] : null,
+                            'sku' => $producto->sku, // NUEVO
+            'devolucion' => $producto->devolucion, // NUEVO
                 'foto' => $producto->foto,
                 'codigo_barras' => $producto->codigo_barras,
                 'promocion' => $producto->promocion ? ['tipo' => $producto->promocion->tipo] : null,
