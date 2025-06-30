@@ -91,9 +91,46 @@
 Route::get('/ventas/{venta}/devoluciones', [DevolucionController::class, 'historial'])->name('ventas.devolucion.historial');
 Route::get('/ventas/{venta}', [\App\Http\Controllers\VentaController::class, 'show'])->name('ventas.show');
 Route::post('/ventas/{venta}/devolucion', [\App\Http\Controllers\DevolucionController::class, 'store'])->name('ventas.devolucion.store');
+Route::get('ventas/{venta}/devolucion', [DevolucionController::class, 'form'])->name('venta.devolucion.form');
+Route::post('ventas/{venta}/devolucion', [DevolucionController::class, 'store'])->name('venta.devolucion.store');
+// Mostrar formulario de devolución
+Route::get('ventas/{venta}/devolucion', [App\Http\Controllers\DevolucionController::class, 'form'])->name('venta.devolucion.form');
+// Procesar devolución
+Route::post('ventas/{venta}/devolucion', [App\Http\Controllers\DevolucionController::class, 'store'])->name('venta.devolucion.store');
+// (Opcional) Ver historial de devoluciones de la venta
+Route::get('ventas/{venta}/devoluciones', [App\Http\Controllers\DevolucionController::class, 'historial'])->name('venta.devolucion.historial');
 
+Route::get('/devoluciones/todas', function () {
+    // Ajusta el namespace/modelo si hace falta:
+    $devoluciones = \App\Models\Devolucion::with(['detalles.producto', 'user'])->orderByDesc('created_at')->get();
 
+    // Devuelve en formato JSON la información necesaria
+    return response()->json($devoluciones);
+});
+Route::get('ventas/{venta}/detalles-json', function(App\Models\Venta $venta) {
+    $venta->load('detalles.producto');
+    return response()->json([
+        'detalles' => $venta->detalles->map(function($d){
+            $p = $d->producto;
+            $sePuede = 'NO';
+            if ($p) {
+                $sePuede = $p->devolucion ? 'SI' : 'NO'; // ← Cambia aquí
+            }
+            return [
+                'producto' => [
+                    'id' => $p->id ?? null,
+                    'nombre' => $p->nombre ?? $p->producto ?? 'Producto eliminado',
+                ],
+                'cantidad' => $d->cantidad,
+                'precio' => $d->precio,
+                'se_puede_devolver' => $sePuede,
+            ];
+        }),
+    ]);
+});
 
+Route::get('/devoluciones/{id}/ticket', [DevolucionController::class, 'ticket'])->name('devoluciones.ticket');
+Route::get('/devoluciones/{id}/ticket', [App\Http\Controllers\DevolucionController::class, 'ticket'])->name('devoluciones.ticket');
 
         });
 

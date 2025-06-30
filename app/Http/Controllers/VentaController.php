@@ -251,24 +251,23 @@ class VentaController extends Controller
     }
 
 
-    public function listVentas()
-    {
-        $ventas = Venta::select('id', 'total', 'created_at', 'tipo')
-            ->orderByDesc('id')
-            ->get()
-            ->map(function ($venta) {
-                return [
-                    'id' => $venta->id,
-                    'total' => '$' . number_format($venta->total, 2),
-                    'created_at' => $venta->created_at->format('Y-m-d H:i:s'),
-                    'tipo' => $venta->tipo === 'abono'
-                        ? '<span class="badge bg-warning">Abono</span>'
-                        : '<span class="badge bg-success">Venta</span>',
-                ];
-            });
+public function listVentas()
+{
+    $ventas = Venta::withCount('devoluciones') // <-- AGREGADO
+        ->orderByDesc('id')
+        ->get()
+        ->map(function ($venta) {
+            return [
+                'id' => $venta->id,
+                'total' => '$' . number_format($venta->total, 2),
+                'created_at' => $venta->created_at->format('Y-m-d H:i:s'),
+                'tipo' => $venta->tipo,
+                'tiene_devolucion' => $venta->devoluciones_count > 0, // AHORA SÍ FUNCIONA
+            ];
+        });
 
-        return response()->json(['data' => $ventas]);
-    }
+    return response()->json(['data' => $ventas]);
+}
 
 
 
@@ -320,9 +319,13 @@ class VentaController extends Controller
             ];
         });
 
+
+
         $company = \App\Models\Compania::first();
         $total_productos = $venta->detalles->sum('cantidad');
         $formatter = new \Luecano\NumeroALetras\NumeroALetras();
+
+
         $total_letras = strtoupper($formatter->toMoney(floatval($venta->total), 2, 'PESOS', 'CENTAVOS'));
         $pagoRecibido = $venta->pago_recibido ?? 0;
         $cambio = ($venta->metodo_pago === 'efectivo' && $pagoRecibido > $venta->total)
