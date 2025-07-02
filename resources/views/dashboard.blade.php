@@ -79,22 +79,44 @@
 
     <!-- Gráficos principales -->
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card card-primary card-outline">
+        <div class="col-md-4">
+            <div class="card card-info card-outline">
                 <div class="card-header border-0">
                     <div class="d-flex justify-content-between">
-                        <h3 class="card-title">Ventas por Semana</h3>
+                        <h3 class="card-title">Ventas por Día (últimos 7 días)</h3>
                         <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
                                     <i class="fas fa-wrench"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <a href="#" class="dropdown-item">Exportar</a>
-                                    <a href="#" class="dropdown-item">Configuración</a>
+                                    <a href="{{ route('export.ventas.dia', ['formato'=>'excel']) }}" class="dropdown-item">Exportar a Excel</a>
+                                    <a href="{{ route('export.ventas.dia', ['formato'=>'pdf']) }}" class="dropdown-item">Exportar a PDF</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="position-relative mb-4">
+                        <canvas id="ventasPorDia" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-primary card-outline">
+                <div class="card-header border-0">
+                    <div class="d-flex justify-content-between">
+                        <h3 class="card-title">Ventas por Semana</h3>
+                        <div class="card-tools">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fas fa-wrench"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <a href="{{ route('export.ventas.semana', ['formato'=>'excel']) }}" class="dropdown-item">Exportar a Excel</a>
+                                    <a href="{{ route('export.ventas.semana', ['formato'=>'pdf']) }}" class="dropdown-item">Exportar a PDF</a>
                                 </div>
                             </div>
                         </div>
@@ -116,22 +138,19 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card card-success card-outline">
                 <div class="card-header border-0">
                     <div class="d-flex justify-content-between">
                         <h3 class="card-title">Ventas por Mes</h3>
                         <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
                                     <i class="fas fa-wrench"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <a href="#" class="dropdown-item">Exportar</a>
-                                    <a href="#" class="dropdown-item">Configuración</a>
+                                    <a href="{{ route('export.ventas.mes', ['formato'=>'excel']) }}" class="dropdown-item">Exportar a Excel</a>
+                                    <a href="{{ route('export.ventas.mes', ['formato'=>'pdf']) }}" class="dropdown-item">Exportar a PDF</a>
                                 </div>
                             </div>
                         </div>
@@ -161,57 +180,51 @@
                 <div class="card-header bg-gradient-dark">
                     <h3 class="card-title">Productos más vendidos</h3>
                     <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-wrench"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                <a href="{{ route('export.productos.vendidos', ['formato'=>'excel']) }}" class="dropdown-item">Exportar a Excel</a>
+                                <a href="{{ route('export.productos.vendidos', ['formato'=>'pdf']) }}" class="dropdown-item">Exportar a PDF</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table id="masVendidosTable" class="table table-striped table-hover">
                             <thead class="thead-dark">
                                 <tr>
                                     <th style="width: 10px">#</th>
                                     <th>Producto</th>
                                     <th>Categoría</th>
+                                    <th>Unidades vendidas</th>
                                     <th>Ventas</th>
                                     <th style="width: 40px">%</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1.</td>
-                                    <td>Producto Ejemplo 1</td>
-                                    <td>Categoría A</td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-success" style="width: 90%"></div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">90%</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2.</td>
-                                    <td>Producto Ejemplo 2</td>
-                                    <td>Categoría B</td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-warning" style="width: 70%"></div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-warning">70%</span></td>
-                                </tr>
-                                <tr>
-                                    <td>3.</td>
-                                    <td>Producto Ejemplo 3</td>
-                                    <td>Categoría C</td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-danger" style="width: 50%"></div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-danger">50%</span></td>
-                                </tr>
+                                @foreach($masVendidos as $i => $mv)
+                                    <tr>
+                                        <td>{{ $i+1 }}</td>
+                                        <td>{{ $mv->producto->producto ?? 'Eliminado' }}</td>
+                                        <td>{{ $mv->producto->categoria->nombre ?? '-' }}</td>
+                                        <td>{{ $mv->total_vendidos }}</td>
+                                        <td>
+                                            <div class="progress progress-xs">
+                                                <div class="progress-bar bg-success"
+                                                    style="width: {{ ($mv->total_vendidos / max(1, $masVendidos->max('total_vendidos'))) * 100 }}%">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                {{ round(($mv->total_vendidos / max(1, $masVendidos->max('total_vendidos'))) * 100) }}%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -231,42 +244,28 @@
                 </div>
                 <div class="card-body p-0">
                     <ul class="products-list product-list-in-card pl-2 pr-2">
-                        <li class="item">
-                            <div class="product-img">
-                                <i class="fas fa-shopping-cart fa-2x text-success"></i>
-                            </div>
-                            <div class="product-info">
-                                <a href="javascript:void(0)" class="product-title">Nueva venta
-                                    <span class="badge badge-success float-right">$1,200</span></a>
-                                <span class="product-description">
-                                    Realizada por: Admin - Hace 10 minutos
-                                </span>
-                            </div>
-                        </li>
-                        <li class="item">
-                            <div class="product-img">
-                                <i class="fas fa-user-plus fa-2x text-primary"></i>
-                            </div>
-                            <div class="product-info">
-                                <a href="javascript:void(0)" class="product-title">Nuevo cliente
-                                    <span class="badge badge-primary float-right">Empresa XYZ</span></a>
-                                <span class="product-description">
-                                    Registrado por: Vendedor1 - Hace 1 hora
-                                </span>
-                            </div>
-                        </li>
-                        <li class="item">
-                            <div class="product-img">
-                                <i class="fas fa-box-open fa-2x text-warning"></i>
-                            </div>
-                            <div class="product-info">
-                                <a href="javascript:void(0)" class="product-title">Nuevo producto
-                                    <span class="badge badge-warning float-right">SKU-1001</span></a>
-                                <span class="product-description">
-                                    Agregado por: Inventario - Hace 2 horas
-                                </span>
-                            </div>
-                        </li>
+                        @foreach($actividad as $item)
+                            <li class="item">
+                                <div class="product-img">
+                                    @if($item['tipo'] == 'venta')
+                                        <i class="fas fa-shopping-cart fa-2x text-success"></i>
+                                    @elseif($item['tipo'] == 'cliente')
+                                        <i class="fas fa-user-plus fa-2x text-primary"></i>
+                                    @elseif($item['tipo'] == 'producto')
+                                        <i class="fas fa-box-open fa-2x text-warning"></i>
+                                    @endif
+                                </div>
+                                <div class="product-info">
+                                    <a href="javascript:void(0)" class="product-title">
+                                        {{ $item['descripcion'] }}
+                                        <span class="badge badge-success float-right">{{ $item['badge'] }}</span>
+                                    </a>
+                                    <span class="product-description">
+                                        Realizado por: {{ $item['usuario'] }} - {{ $item['fecha']->diffForHumans() }}
+                                    </span>
+                                </div>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
                 <div class="card-footer text-center">
@@ -317,35 +316,175 @@
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Ventas por semana
-            var ctxSemana = document.getElementById('ventasPorSemana').getContext('2d');
-            var dataSemana = {!! json_encode($ventasPorSemana) !!};
+        // Exportar tabla a Excel
+        function exportTableToExcel(tableID, filename = ''){
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel';
+            var tableSelect = document.getElementById(tableID);
+            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+            filename = filename?filename+'.xls':'export_data.xls';
+            downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            if(navigator.msSaveOrOpenBlob){
+                var blob = new Blob(['\ufeff', tableHTML], { type: dataType });
+                navigator.msSaveOrOpenBlob( blob, filename);
+            }else{
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+                downloadLink.download = filename;
+                downloadLink.click();
+            }
+        }
 
+        // Exportar tabla a PDF
+        function exportTableToPDF(tableID, filename = '') {
+            var doc = new jspdf.jsPDF('l', 'pt', 'a4');
+            var table = document.getElementById(tableID);
+            html2canvas(table).then(function(canvas) {
+                var imgData = canvas.toDataURL('image/png');
+                var pageWidth = doc.internal.pageSize.getWidth();
+                var pageHeight = doc.internal.pageSize.getHeight();
+                var imgWidth = pageWidth - 40;
+                var imgHeight = canvas.height * imgWidth / canvas.width;
+                doc.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
+                doc.save(filename ? filename + '.pdf' : 'export_data.pdf');
+            });
+        }
+
+        // Exportar gráfica a PDF
+        function exportChartToPDF(canvasId, filename = '') {
+            var doc = new jspdf.jsPDF('l', 'pt', 'a4');
+            var canvas = document.getElementById(canvasId);
+            html2canvas(canvas).then(function(canvasExported) {
+                var imgData = canvasExported.toDataURL('image/png');
+                var pageWidth = doc.internal.pageSize.getWidth();
+                var pageHeight = doc.internal.pageSize.getHeight();
+                var imgWidth = pageWidth - 40;
+                var imgHeight = canvasExported.height * imgWidth / canvasExported.width;
+                doc.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
+                doc.save(filename ? filename + '.pdf' : 'grafica.pdf');
+            });
+        }
+
+        // Exportar gráfica a Excel (solo los datos)
+        function exportChartToExcel(canvasId, filename = '') {
+            let chart;
+            if (canvasId === 'ventasPorDia') chart = window.chartDia;
+            else if (canvasId === 'ventasPorSemana') chart = window.chartSemana;
+            else if (canvasId === 'ventasPorMes') chart = window.chartMes;
+            else return;
+
+            if (!chart) return;
+
+            let csv = "Etiqueta,Valor\n";
+            chart.data.labels.forEach((label, i) => {
+                let value = chart.data.datasets[0].data[i];
+                csv += `${label},${value}\n`;
+            });
+
+            let blob = new Blob([csv], {type: 'text/csv'});
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.setAttribute('hidden','');
+            a.setAttribute('href', url);
+            a.setAttribute('download', (filename ? filename : 'grafica') + '.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        $(document).ready(function() {
+            // Ventas por día (nueva gráfica)
+            var dataDia = {!! json_encode($ventasPorDia) !!};
+            var labelsDia = dataDia.map(item => item.fecha);
+            var valoresDia = dataDia.map(item => item.total);
+
+            var ctxDia = document.getElementById('ventasPorDia').getContext('2d');
+            window.chartDia = new Chart(ctxDia, {
+                type: 'line',
+                data: {
+                    labels: labelsDia,
+                    datasets: [{
+                        label: 'Ventas por día',
+                        data: valoresDia,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false,
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: true,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' $' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        },
+                        zoom: {
+                            pan: { enabled: true, mode: 'x' },
+                            zoom: { enabled: true, mode: 'x' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Ventas por semana (mejorada)
+            var dataSemana = {!! json_encode($ventasPorSemana) !!};
             var labelsSemana = dataSemana.map(item => item.dia);
             var valoresSemana = dataSemana.map(item => item.total);
 
-            var chartSemana = new Chart(ctxSemana, {
+            var ctxSemana = document.getElementById('ventasPorSemana').getContext('2d');
+            window.chartSemana = new Chart(ctxSemana, {
                 type: 'line',
                 data: {
                     labels: labelsSemana,
                     datasets: [{
                         label: 'Ventas esta semana',
                         data: valoresSemana,
-                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
                         borderColor: 'rgba(78, 115, 223, 1)',
                         pointBackgroundColor: 'rgba(78, 115, 223, 1)',
                         pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
                         borderWidth: 2,
                         tension: 0.3,
-                        fill: true
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
                     }]
                 },
                 options: {
                     maintainAspectRatio: false,
+                    responsive: true,
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false,
+                    },
                     plugins: {
                         tooltip: {
                             backgroundColor: "rgb(255,255,255)",
@@ -366,6 +505,10 @@
                                     return 'Ventas: $' + context.parsed.y.toLocaleString();
                                 }
                             }
+                        },
+                        zoom: {
+                            pan: { enabled: true, mode: 'x' },
+                            zoom: { enabled: true, mode: 'x' }
                         }
                     },
                     scales: {
@@ -394,16 +537,14 @@
                 }
             });
 
-            // Ventas por mes
+            // Ventas por mes (mejorada)
             var dataVenta = @json($ventas);
             if (dataVenta && Object.keys(dataVenta).length > 0) {
                 var ctxMes = document.getElementById('ventasPorMes').getContext('2d');
-
                 var years = Object.keys(dataVenta);
                 var currentYearData = Object.values(dataVenta[years[years.length - 1]]);
-                var previousYearData = years.length > 1 ? Object.values(dataVenta[years[years.length - 2]]) : [];
-
-                var chartMes = new Chart(ctxMes, {
+                var previousYearData = years.length > 1 ? Object.values(dataVenta[years.length - 2]) : [];
+                window.chartMes = new Chart(ctxMes, {
                     type: 'bar',
                     data: {
                         labels: Object.keys(dataVenta[Object.keys(dataVenta)[0]]),
@@ -426,6 +567,7 @@
                     },
                     options: {
                         maintainAspectRatio: false,
+                        responsive: true,
                         plugins: {
                             tooltip: {
                                 backgroundColor: "rgb(255,255,255)",
@@ -446,6 +588,10 @@
                                         return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
                                     }
                                 }
+                            },
+                            zoom: {
+                                pan: { enabled: true, mode: 'x' },
+                                zoom: { enabled: true, mode: 'x' }
                             }
                         },
                         scales: {

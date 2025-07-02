@@ -14,6 +14,7 @@
     use App\Http\Controllers\PromocionController;
     use Illuminate\Support\Facades\Route;
     use App\Http\Controllers\DevolucionController;
+use App\Http\Controllers\FacturaController;
 
 
         Route::get('/', [AuthenticatedSessionController::class, 'create'])
@@ -132,6 +133,32 @@ Route::get('ventas/{venta}/detalles-json', function(App\Models\Venta $venta) {
 Route::get('/devoluciones/{id}/ticket', [DevolucionController::class, 'ticket'])->name('devoluciones.ticket');
 Route::get('/devoluciones/{id}/ticket', [App\Http\Controllers\DevolucionController::class, 'ticket'])->name('devoluciones.ticket');
 
+Route::get('/export-productos-vendidos/{formato}', [DashboardController::class, 'exportProductosVendidos'])->name('export.productos.vendidos');
+Route::get('/export-ventas-dia/{formato}', [DashboardController::class, 'exportVentasDia'])->name('export.ventas.dia');
+Route::get('/export-ventas-semana/{formato}', [DashboardController::class, 'exportVentasSemana'])->name('export.ventas.semana');
+Route::get('/export-ventas-mes/{formato}', [DashboardController::class, 'exportVentasMes'])->name('export.ventas.mes');
+
+Route::prefix('facturas')->group(function () {
+    Route::get('/', [FacturaController::class, 'index'])->name('factura.index');
+    Route::get('/crear/{ventaId}', [FacturaController::class, 'create'])->name('factura.create');
+    Route::post('/guardar', [FacturaController::class, 'store'])->name('factura.store');
+    Route::get('/{id}', [FacturaController::class, 'show'])->name('factura.show');
+});
+
+Route::get('/facturas/{id}/pdf', [FacturaController::class, 'pdf'])->name('factura.pdf');
+
+
+Route::get('/facturas/all', [FacturaController::class, 'showAll'])->name('factura.showAll');
+Route::get('/facturas/{id}/pdf', [FacturaController::class, 'pdffactura'])->name('factura.pdffactura');
+Route::delete('/facturas/{id}', [FacturaController::class, 'destroy'])->name('factura.destroy');
+// Para mostrar el listado de todas las facturas
+Route::get('/facturas/show', [FacturaController::class, 'showAll'])->name('factura.showAll');
+Route::get('/facturas/{id}/pdffactura', [FacturaController::class, 'pdffactura'])->name('factura.pdffactura');
+Route::delete('/facturas/{id}', [FacturaController::class, 'destroy'])->name('factura.destroy');
+
+
+Route::get('/facturas/{id}/pdf', [FacturaController::class, 'pdf'])->name('factura.pdf');
+Route::get('/facturas/{id}/ticket', [FacturaController::class, 'ticketFactura'])->name('factura.ticket');
         });
 
         require __DIR__ . '/auth.php';

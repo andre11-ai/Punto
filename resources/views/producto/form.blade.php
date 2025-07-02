@@ -89,17 +89,17 @@
                 @enderror
             </div>
             <div class="form-group">
-    <label for="sku">Cantidad en stock (SKU):</label>
-    <input type="number" class="form-control" name="sku" id="sku" value="{{ old('sku', $producto->sku) }}">
-</div>
+                <label for="sku">Cantidad en stock (SKU):</label>
+                <input type="number" class="form-control" name="sku" id="sku" value="{{ old('sku', $producto->sku) }}">
+            </div>
 
-<div class="form-group">
-    <label for="devolucion">¿Se puede devolver?</label>
-    <select class="form-control" name="devolucion" id="devolucion">
-        <option value="1" {{ old('devolucion', $producto->devolucion) == 1 ? 'selected' : '' }}>Sí</option>
-        <option value="0" {{ old('devolucion', $producto->devolucion) == 0 ? 'selected' : '' }}>No</option>
-    </select>
-</div>
+            <div class="form-group">
+                <label for="devolucion">¿Se puede devolver?</label>
+                <select class="form-control" name="devolucion" id="devolucion">
+                    <option value="1" {{ old('devolucion', $producto->devolucion) == 1 ? 'selected' : '' }}>Sí</option>
+                    <option value="0" {{ old('devolucion', $producto->devolucion) == 0 ? 'selected' : '' }}>No</option>
+                </select>
+            </div>
 
             <div class="mt-3 text-center" id="barcode-container">
                 @if(!empty($producto->codigo_barras))

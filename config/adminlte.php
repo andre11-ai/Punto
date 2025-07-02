@@ -308,6 +308,10 @@ return [
             'icon'        => 'fas fa-fw fa-chart-pie'
         ],
         [
+            'text' => 'Compania',
+            'url'  => '/compania',
+        ],
+        [
             'text'        => 'Administración',
             'url'         => '#',
             'icon'        => 'fas fa-fw fa-list',
@@ -315,10 +319,6 @@ return [
                 [
                     'text' => 'Usuarios',
                     'url'  => '/usuarios',
-                ],
-                [
-                    'text' => 'Compania',
-                    'url'  => '/compania',
                 ],
             ],
         ],
@@ -361,13 +361,25 @@ return [
                     'url'  => '/venta/show',
                     'icon' => 'fas fa-truck',
                 ],
-                               [
-                    'text' => 'Devoluciones',
-                    'url'  => '/venta/devolucion',
-                    'icon' => '',
-                ],
+
             ],
-        ]
+        ],
+[
+    'text'    => 'Facturación',
+    'icon'    => 'fas fa-file-invoice-dollar',
+    'submenu' => [
+        [
+            'text' => 'Facturacion',
+            'url'  => '/facturas',
+            'icon' => 'fas fa-list',
+        ],
+        [
+            'text' => 'Lista Factura',
+            'url'  => '/facturas/show',
+            'icon' => 'fas fa-search',
+        ],
+    ],
+],
     ],
 
     /*

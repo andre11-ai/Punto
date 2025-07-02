@@ -47,19 +47,18 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('compania.update', $compania) }}" role="form" class="needs-validation" novalidate>
+                    <form method="POST" action="{{ route('compania.update', $compania) }}" class="needs-validation" novalidate>
                         @method('PUT')
                         @csrf
 
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    {{ Form::label('nombre', 'Nombre', ['class' => 'form-label']) }}
-                                    {{ Form::text('nombre', $compania->nombre, [
-                                        'class' => 'form-control' . ($errors->has('nombre') ? ' is-invalid' : ''),
-                                        'placeholder' => 'Nombre de la compañía',
-                                        'required'
-                                    ]) }}
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" id="nombre" name="nombre"
+                                        class="form-control{{ $errors->has('nombre') ? ' is-invalid' : '' }}"
+                                        value="{{ old('nombre', $compania->nombre) }}"
+                                        placeholder="Nombre de la compañía" required>
                                     @error('nombre')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -68,12 +67,11 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    {{ Form::label('telefono', 'Teléfono', ['class' => 'form-label']) }}
-                                    {{ Form::text('telefono', $compania->telefono, [
-                                        'class' => 'form-control' . ($errors->has('telefono') ? ' is-invalid' : ''),
-                                        'placeholder' => 'Teléfono',
-                                        'required'
-                                    ]) }}
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="text" id="telefono" name="telefono"
+                                        class="form-control{{ $errors->has('telefono') ? ' is-invalid' : '' }}"
+                                        value="{{ old('telefono', $compania->telefono) }}"
+                                        placeholder="Teléfono" required>
                                     @error('telefono')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -82,12 +80,11 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    {{ Form::label('correo', 'Correo Electrónico', ['class' => 'form-label']) }}
-                                    {{ Form::email('correo', $compania->correo, [
-                                        'class' => 'form-control' . ($errors->has('correo') ? ' is-invalid' : ''),
-                                        'placeholder' => 'correo@ejemplo.com',
-                                        'required'
-                                    ]) }}
+                                    <label for="correo" class="form-label">Correo Electrónico</label>
+                                    <input type="email" id="correo" name="correo"
+                                        class="form-control{{ $errors->has('correo') ? ' is-invalid' : '' }}"
+                                        value="{{ old('correo', $compania->correo) }}"
+                                        placeholder="correo@ejemplo.com" required>
                                     @error('correo')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -96,12 +93,11 @@
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    {{ Form::label('direccion', 'Dirección', ['class' => 'form-label']) }}
-                                    {{ Form::text('direccion', $compania->direccion, [
-                                        'class' => 'form-control' . ($errors->has('direccion') ? ' is-invalid' : ''),
-                                        'placeholder' => 'Dirección completa',
-                                        'required'
-                                    ]) }}
+                                    <label for="direccion" class="form-label">Dirección</label>
+                                    <input type="text" id="direccion" name="direccion"
+                                        class="form-control{{ $errors->has('direccion') ? ' is-invalid' : '' }}"
+                                        value="{{ old('direccion', $compania->direccion) }}"
+                                        placeholder="Dirección completa" required>
                                     @error('direccion')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

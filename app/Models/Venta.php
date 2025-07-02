@@ -23,8 +23,8 @@ class Venta extends Model
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
-public function devoluciones()
-{
-    return $this->hasMany(\App\Models\Devolucion::class, 'venta_id');
-}
+    public function devoluciones()
+    {
+        return $this->hasMany(\App\Models\Devolucion::class, 'venta_id');
+    }
 }
